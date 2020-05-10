@@ -1,11 +1,13 @@
 package com.rest.webservices.user;
 
+import com.rest.webservices.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -39,6 +41,15 @@ public class UserController {
 
         return ResponseEntity.created(location).build();
 
+    }
+
+    @DeleteMapping("/users/{id}")
+    public void deleteUser(@PathVariable int id) {
+        User user = service.deleteById(id);
+
+        if(user == null) {
+            throw new UserNotFoundException("id-" + id);
+        }
     }
 
 }
