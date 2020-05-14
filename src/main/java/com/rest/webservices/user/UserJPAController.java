@@ -52,4 +52,14 @@ public class UserJPAController {
     public void deleteUser(@PathVariable int id) {
         userRepository.deleteById(id);
     }
+
+    @GetMapping("/jpa/users/{id}/posts")
+    public List<Post> retrieveAllUserPosts(@PathVariable int id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if(!userOptional.isPresent()) {
+            throw new UserNotFoundException("id - " + id);
+        }
+        List<Post> postList = userOptional.get().getPosts();
+        return postList;
+    }
 }
