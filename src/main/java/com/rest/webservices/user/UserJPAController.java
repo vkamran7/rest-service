@@ -1,6 +1,7 @@
 package com.rest.webservices.user;
 
 import com.rest.webservices.exception.UserNotFoundException;
+import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,9 @@ public class UserJPAController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PostRepository postRepository;
 
     @GetMapping("/jpa/users")
     public List<User> retrieveAllUsers() {
@@ -61,5 +65,24 @@ public class UserJPAController {
         }
         List<Post> postList = userOptional.get().getPosts();
         return postList;
+    }
+
+    @PostMapping("/jpa/users/{id}/posts")
+    public ResponseEntity<Object> createPost(@PathVariable int id,
+                                     @RequestBody Post post) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (!optionalUser.isPresent()) {
+            throw new UserNotFoundException("id - " + id);
+        }
+        User user = optionalUser.get();
+        post.setUser(user);
+        postRepository.save(post);
+
+        URI location =  ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(post.getId())
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 }
