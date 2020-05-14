@@ -37,7 +37,7 @@ public class UserJPAController {
 
     @PostMapping("/jpa/users")
     public ResponseEntity createUser(@Valid @RequestBody User user) {
-        User savedUser = service.save(user);
+        User savedUser = userRepository.save(user);
         URI location =  ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -50,10 +50,6 @@ public class UserJPAController {
 
     @DeleteMapping("/jpa/users/{id}")
     public void deleteUser(@PathVariable int id) {
-        User user = service.deleteById(id);
-
-        if(user == null) {
-            throw new UserNotFoundException("id-" + id);
-        }
+        userRepository.deleteById(id);
     }
 }
